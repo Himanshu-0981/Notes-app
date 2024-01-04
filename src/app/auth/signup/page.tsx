@@ -1,10 +1,13 @@
 "use client";
 
 import React, { useState } from 'react'
+import { useRouter } from 'next/navigation';
+import axios from 'axios';
 import { IoIosArrowForward } from "react-icons/io";
 
 import Button from "@/components/Button";
 import Input from "@/components/Input";
+import { ENV_CONFIG } from '@/config/env_config';
 
 
 type FormState = {
@@ -25,6 +28,8 @@ export default function Signup() {
 
     const [form, setForm] = useState<FormState>(initialFormState)
 
+    const navigate = useRouter()
+
     const changeFunction = (event: React.ChangeEvent<HTMLInputElement>) => {
         setForm({
             ...form,
@@ -32,8 +37,24 @@ export default function Signup() {
         })
     }
 
-    const handleSignup = async () => {
-        console.log(form);
+    const handleSignup = async (): Promise<void> => {
+        try {
+            const { data } = await axios.post(`${ENV_CONFIG.API_ENDPOINT}user`, form)
+            console.log(data)
+            if (data) {
+                setForm(initialFormState)
+                navigate.push('/auth/login')
+                console.log('signup successfully')
+            } else {
+                console.log("Something went wrong")
+            }
+
+        } catch (error) {
+            if (error) {
+                const typedError = error as Error;
+                console.log(typedError.message)
+            }
+        }
     }
 
     return (
