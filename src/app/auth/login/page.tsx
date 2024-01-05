@@ -6,7 +6,9 @@ import { IoIosArrowForward } from 'react-icons/io'
 
 import Input from "@/components/Input";
 import Button from '@/components/Button';
-
+import axios from 'axios';
+import { ENV_CONFIG } from '@/config/env_config';
+import { useRouter } from 'next/navigation';
 
 interface FormState {
     email: string
@@ -22,6 +24,7 @@ export default function Login() {
 
     const [form, setForm] = useState<FormState>(initialFormState)
 
+    const navigate = useRouter()
 
     const changeFunction = (event: React.ChangeEvent<HTMLInputElement>) => {
         setForm({
@@ -30,8 +33,22 @@ export default function Login() {
         })
     }
 
-    const handleLogin = () => {
-        console.log(form)
+    const handleLogin = async (): Promise<void> => {
+        try {
+            const { data } = await axios.post(`${ENV_CONFIG.API_ENDPOINT}/user/login`, form)
+            if (data.success) {
+                setForm(initialFormState)
+                navigate.push('/')
+                console.log('login successfully')
+            } else {
+                console.log("Something went wrong", data.message)
+            }
+        } catch (error) {
+            if (error) {
+                const typedError = error as Error
+                console.log(typedError.message)
+            }
+        }
     }
 
     return (

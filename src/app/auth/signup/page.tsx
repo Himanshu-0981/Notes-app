@@ -39,14 +39,14 @@ export default function Signup() {
 
     const handleSignup = async (): Promise<void> => {
         try {
-            const { data } = await axios.post(`${ENV_CONFIG.API_ENDPOINT}user`, form)
-            console.log(data)
-            if (data) {
+            const { data } = await axios.post(`${ENV_CONFIG.API_ENDPOINT}/user/signup`, form)
+            console.log(data.success)
+            if (data.success) {
                 setForm(initialFormState)
                 navigate.push('/auth/login')
                 console.log('signup successfully')
             } else {
-                console.log("Something went wrong")
+                console.log("Something went wrong", data.message)
             }
 
         } catch (error) {
